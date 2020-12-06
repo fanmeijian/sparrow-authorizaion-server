@@ -1,5 +1,6 @@
 package cn.youweisoft.authorization.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -22,6 +23,7 @@ import java.security.KeyPair;
 @Configuration
 public class JwkSetConfiguration extends AuthorizationServerConfigurerAdapter {
 
+//	@Autowired
     AuthenticationManager authenticationManager;
     KeyPair keyPair;
     PasswordEncoder passwordEncoder;
@@ -47,12 +49,14 @@ public class JwkSetConfiguration extends AuthorizationServerConfigurerAdapter {
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
             .inMemory()
-            .withClient("test-client")
-            .secret(passwordEncoder.encode("noonewilleverguess"))
-            .scopes("any")
-            .autoApprove(true)
-            .authorizedGrantTypes("password", "refresh_token")
+	            .withClient("test-client")
+		            .secret(passwordEncoder.encode("noonewilleverguess"))
+		            .scopes("49")
+		            .autoApprove(true)
+		            .authorizedGrantTypes("password", "refresh_token")  
+       
         ;
+        
     }
 
     @Override

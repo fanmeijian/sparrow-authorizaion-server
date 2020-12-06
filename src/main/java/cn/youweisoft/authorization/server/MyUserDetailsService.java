@@ -15,7 +15,7 @@ import cn.youweisoft.authorization.server.model.SwdUser;
 import cn.youweisoft.authorization.server.repository.AuthorityRepository;
 import cn.youweisoft.authorization.server.repository.UserRepository;
 
-@Component
+//@Component
 public class MyUserDetailsService implements UserDetailsService {
 	@Autowired
 	UserRepository userRepository;
@@ -39,7 +39,7 @@ public class MyUserDetailsService implements UserDetailsService {
 			roles[authorities.indexOf(o)] = o.getId();
 		});
 
-		return User.withUsername(username).password(swdUser.getPassword()).roles(roles).build();
+		return User.withUsername(username).password(swdUser.getPassword()).authorities(roles).build();
 
 	}
 }
