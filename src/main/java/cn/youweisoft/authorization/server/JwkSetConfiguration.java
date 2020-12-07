@@ -1,6 +1,7 @@
 package cn.youweisoft.authorization.server;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.security.KeyPair;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -17,8 +18,6 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
-import java.security.KeyPair;
-
 @Import(AuthorizationServerEndpointsConfiguration.class)
 @Configuration
 public class JwkSetConfiguration extends AuthorizationServerConfigurerAdapter {
@@ -28,12 +27,14 @@ public class JwkSetConfiguration extends AuthorizationServerConfigurerAdapter {
     KeyPair keyPair;
     PasswordEncoder passwordEncoder;
     UserDetailsService userDetailsService;
+    MyClientDetailsService clientDetailsService;
 
-    public JwkSetConfiguration(AuthenticationConfiguration authenticationConfiguration, KeyPair keyPair, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) throws Exception {
+    public JwkSetConfiguration(AuthenticationConfiguration authenticationConfiguration, KeyPair keyPair, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService, MyClientDetailsService clientDetailsService) throws Exception {
         this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
         this.keyPair = keyPair;
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
+        this.clientDetailsService = clientDetailsService;
     }
 
     @Override
@@ -47,16 +48,7 @@ public class JwkSetConfiguration extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients
-            .inMemory()
-	            .withClient("test-client")
-		            .secret(passwordEncoder.encode("noonewilleverguess"))
-		            .scopes("49")
-		            .autoApprove(true)
-		            .authorizedGrantTypes("password", "refresh_token")  
-       
-        ;
-        
+        clients.withClientDetails(clientDetailsService);    
     }
 
     @Override
