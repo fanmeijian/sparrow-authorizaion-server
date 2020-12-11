@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import cn.youweisoft.authorization.server.model.SwdAuthority;
+import cn.youweisoft.authorization.server.model.SwdSysrole;
 import cn.youweisoft.authorization.server.model.SwdUser;
 import cn.youweisoft.authorization.server.repository.AuthorityRepository;
 import cn.youweisoft.authorization.server.repository.UserRepository;
@@ -23,6 +23,9 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	AuthorityRepository authorityRepository;
+	
+//	@Autowired
+//	ClTokenEnhancer clientDetails;
 
 	
 	@Override
@@ -32,16 +35,18 @@ public class MyUserDetailsService implements UserDetailsService {
 //		Logger.getLogger(this.toString()).info("----------" + username + swdUser.getPassword() + swdUser.getPassword());
 		List<SwdAuthority> authorities = new ArrayList<SwdAuthority>();
 		
+		
 		authorities.addAll(swdUser.getSwdAuthorities());
-		swdUser.getSwdSysroles().forEach(o -> {
-			authorities.addAll(o.getSwdAuthorities());
+		swdUser.getSwdSysroles().forEach(sysrole -> {
+			authorities.addAll(sysrole.getSwdAuthorities());
+			
 		});
-		String[] roles = new String[authorities.size()];
-		authorities.forEach(o -> {
-			roles[authorities.indexOf(o)] = o.getId();
+		String[] allAuthorities = new String[authorities.size()];
+		authorities.forEach(authority -> {
+			allAuthorities[authorities.indexOf(authority)] = authority.getId();
 		});
 
-		return User.withUsername(username).password(swdUser.getPassword()).authorities(roles).build();
+		return User.withUsername(username).password(swdUser.getPassword()).authorities(allAuthorities).build();
 
 	}
 }

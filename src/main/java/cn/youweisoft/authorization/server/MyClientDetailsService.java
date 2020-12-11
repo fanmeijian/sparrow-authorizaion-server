@@ -33,7 +33,7 @@ public class MyClientDetailsService implements ClientDetailsService {
 				"",
 				client.getRedirectUri());
         details.setClientSecret(client.getClientSecret());
-        details.addAdditionalInformation("subject", "sysadmin");
+//        details.addAdditionalInformation("subject", "sysadmin");
         return details;
 	}
 

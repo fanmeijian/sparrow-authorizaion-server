@@ -1,6 +1,7 @@
 package cn.youweisoft.authorization.server;
 
 import java.security.KeyPair;
+import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -28,13 +30,15 @@ public class JwkSetConfiguration extends AuthorizationServerConfigurerAdapter {
     PasswordEncoder passwordEncoder;
     UserDetailsService userDetailsService;
     MyClientDetailsService clientDetailsService;
+    ClTokenEnhancer clTokenEnhancer;
 
-    public JwkSetConfiguration(AuthenticationConfiguration authenticationConfiguration, KeyPair keyPair, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService, MyClientDetailsService clientDetailsService) throws Exception {
+    public JwkSetConfiguration(AuthenticationConfiguration authenticationConfiguration, KeyPair keyPair, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService, MyClientDetailsService clientDetailsService, ClTokenEnhancer clTokenEnhancer) throws Exception {
         this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
         this.keyPair = keyPair;
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
         this.clientDetailsService = clientDetailsService;
+        this.clTokenEnhancer = clTokenEnhancer;
     }
 
     @Override
@@ -53,9 +57,13 @@ public class JwkSetConfiguration extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+    	TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+    	  tokenEnhancerChain.setTokenEnhancers(
+    	      Arrays.asList(clTokenEnhancer,accessTokenConverter()));
         endpoints.authenticationManager(this.authenticationManager)
             .accessTokenConverter(accessTokenConverter())
             .userDetailsService(userDetailsService)
+            .tokenEnhancer(tokenEnhancerChain)
             .tokenStore(tokenStore());
     }
 
