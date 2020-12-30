@@ -15,49 +15,38 @@ import cn.youweisoft.authorization.server.model.SwdSysrole;
 import cn.youweisoft.authorization.server.repository.UserRepository;
 import net.minidev.json.JSONArray;
 
+/**
+ * 保存在token里面的roles域，主要用来其他的应用系统控制的。
+ * 
+ * @author fanmj
+ *
+ */
 @Component
 public class ClTokenEnhancer implements TokenEnhancer {
 
-	
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	SwdLogService logService;
-	
-	
-//	private ClientDetailsService clientDetailsService;
-//
-//    public ClTokenEnhancer( MyClientDetailsService clientDetailsService ) {
-//
-//        this.clientDetailsService = clientDetailsService;
-//    }
-	
+
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-//		ClientDetails clientDetails = clientDetailsService.loadClientByClientId( authentication.getOAuth2Request().getClientId() );
+
 		Map<String, Object> info = new HashMap<>();
 		List<SwdSysrole> sysroles = userRepository.userSysroles(authentication.getName());
-		
-		JSONArray ja = new JSONArray();
-		
-//		List<String> roles = new ArrayList<String>();
-		sysroles.forEach(sysrole->{
-//			roles.add(sysrole.getName()) ;
-			ja.add(sysrole.getName());
+
+		JSONArray jaSysrole = new JSONArray();
+		sysroles.forEach(sysrole -> {
+			jaSysrole.add(sysrole.getName());
 		});
-//		Function<String,String> addQuotes = s -> "\"" + s + "\"";
-//		String sroles = roles.toString();
-		info.put("subject", authentication.getName());	
-		info.put("roles", ja);
-//		info.put("roles","["+roles.stream()
-//				  .map(addQuotes)
-//				  .collect(Collectors.joining(", "))+"]");
-//		clientDetails.getAdditionalInformation() 
-        ( (DefaultOAuth2AccessToken) accessToken ).setAdditionalInformation(info );
-        //the login log
-        logService.loginLog(authentication.getName(), "");
-        return accessToken;
+		
+		info.put("subject", authentication.getName());
+		info.put("roles", jaSysrole);
+		((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
+
+		logService.loginLog(authentication.getName(), "");
+		return accessToken;
 	}
 
 }

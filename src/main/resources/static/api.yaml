@@ -16,75 +16,28 @@ tags:
 schemes:
 - "http"
 paths:
-  /oauth2/token:
+  /oauth/token:
     post:
       tags:
       - "认证"
       summary: "登录"
       parameters:
-      - name: "body"
-        in: "body"
-        schema:
-          $ref: "#/definitions/Oauth"
+      - name: "username"
+        in: "query"
+        type: "string"
+      - name: "password"
+        in: "query"
+        type: "string"
+      - name: "client_id"
+        in: "query"
+        type: "string"   
+      - name: "client_secret"
+        in: "query"
+        type: "string"
+      - name: "grant_type"
+        in: "query"
+        type: "string"
+        description: "[password]"
       responses:
         "200":
           description: "成功"
-  /oauth2/password:
-    post:
-      tags:
-      - "认证"
-      summary: "修改密码"
-      parameters:
-      - name: "body"
-        in: "body"
-        schema:
-          allOf: 
-          - $ref: "#/definitions/Oauth"
-          type: "object"
-          properties:
-            oldPassword:
-              type: "string"
-            secondPassword:
-              type: "string"
-      responses:
-        "200":
-          description: "成功"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - Authorization: []
-    put:
-      tags:
-      - "认证"
-      summary: "重置密码"
-      parameters:
-      - name: "body"
-        in: "body"
-        schema:
-          $ref: "#/definitions/Oauth"
-      responses:
-        "200":
-          description: "成功"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - Authorization: []
-      
-definitions:    
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-      type:
-        type: "string"
-      message:
-        type: "string"
-          
-  Oauth:
-    type: "object"
-    properties: 
-      username:
-        type: "string"
-      password:
-        type: "string"
