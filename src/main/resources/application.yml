@@ -1,5 +1,5 @@
-spring:
-  application:    name: sparrow-authorization-server
+#spring:
+#  application:#    name: sparrow-authorization-server
 
 #logging:
 #  level:
